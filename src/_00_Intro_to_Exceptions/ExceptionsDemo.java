@@ -1,5 +1,9 @@
 package _00_Intro_to_Exceptions;
 
+import javax.swing.JOptionPane;
+
+import org.junit.platform.commons.function.Try;
+
 public class ExceptionsDemo {
 
     /*
@@ -36,9 +40,31 @@ public class ExceptionsDemo {
      * Despite this, you can still make a try/catch and attempt to catch them.
      */
 
-    public static void main(String[] args) {
+    public static void main(String[] args)  {
 
         // 1. Create a try/catch block (Hint: type "try" and ctrl + space).
+try {
+	testFiveOrGreater(4);
+} catch (Exception e) {
+	// TODO: handle exception
+	e.printStackTrace();
+}
+try {
+	NegativeNumberException.testPositive(-1);
+} catch (Exception e) {
+	// TODO: handle exception
+	NegativeNumberException.scaryPopup();
+}finally {
+	JOptionPane.showMessageDialog(null, "Don't worry, your computer is fine (I think)");
+}
+try {
+	NegativeNumberException.testPositive(1);
+} catch (Exception e) {
+	// TODO: handle exception
+	NegativeNumberException.scaryPopup();
+}finally {
+	JOptionPane.showMessageDialog(null, "Don't worry, your computer is fine (I think)");
+}
 
         /*
          * 2. Call the testFiveOrGreater method with a value less than 5 inside
@@ -63,7 +89,18 @@ public class ExceptionsDemo {
      * JOptionPane Message Dialog telling the user they have triggered a
      * critical error in their computer.
      */
+    
+static class NegativeNumberException{
 
+	public static void scaryPopup(){
+		JOptionPane.showMessageDialog(null, "You have triggered a critical error in your computer");
+	}
+	public static void testPositive(int i) throws Exception {
+		if (i <0) {
+			throw new Exception();
+		}
+	}
+}
     /*
      * 7. Create a static method in this class called testPositive. It should
      * take a single number as a parameter and throw a NegativeNumberException

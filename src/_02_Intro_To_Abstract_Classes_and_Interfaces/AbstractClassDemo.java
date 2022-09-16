@@ -50,3 +50,6 @@ public abstract class AbstractClassDemo {
  * 1. Create a class that extends the AbstractClassDemo class and implement its
  * methods.
  */
+abstract class demo extends AbstractClassDemo implements InterfaceDemo, DemoInterface{
+	
+}

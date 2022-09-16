@@ -12,8 +12,8 @@ public class BackwardsString implements TextFunkifier {
 
     @Override
     public String funkifyText() {
-
-        return null;
+    	StringBuilder returned =new StringBuilder(unfunkifiedText);
+        return returned.toString();
 
     }
 }

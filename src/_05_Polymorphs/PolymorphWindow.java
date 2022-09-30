@@ -5,8 +5,14 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -52,7 +58,7 @@ import javax.swing.Timer;
  *  clicked. Hint: MouseListener interface.
  */
 
-public class PolymorphWindow extends JPanel implements ActionListener {
+public class PolymorphWindow extends JPanel implements ActionListener, MouseMotionListener, MouseListener {
 
     public static final int WIDTH = 900;
     public static final int HEIGHT = 600;
@@ -60,9 +66,10 @@ public class PolymorphWindow extends JPanel implements ActionListener {
     private JFrame window;
     private Timer timer;
 
-    Polymorph bluePoly;
-    Polymorph redPoly;
-    Polymorph movPoly;
+//    Polymorph bluePoly;
+//    Polymorph redPoly;
+//    Polymorph movPoly;
+    ArrayList<Polymorph> polys = new ArrayList<Polymorph>();
     public static void main(String[] args) {
         new PolymorphWindow().buildWindow();
     }
@@ -74,10 +81,18 @@ public class PolymorphWindow extends JPanel implements ActionListener {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.pack();
         window.setVisible(true);
+        window.addMouseMotionListener(this);
+        window.addMouseListener(this);
+        
 
-        bluePoly = new BluePolymorph(50, 50,150,150);
-        redPoly = new RedPolymorph(50, 25, 150,150);
-        movPoly = new MovingMorph(75,15,150,150);
+//        bluePoly = new BluePolymorph(50, 50);
+//        redPoly = new RedPolymorph(300, 100);
+//        movPoly = new MovingMorph(250,300);
+        polys.add(new RedPolymorph(50,50));
+        polys.add(new BluePolymorph(100,50));
+        polys.add(new MovingMorph(100,100)); 
+        polys.add(new MouseMorph(100,100));
+        polys.add(new ClickMorph(300,250));
         timer = new Timer(1000 / 30, this);
         timer.start();
     }
@@ -88,13 +103,69 @@ public class PolymorphWindow extends JPanel implements ActionListener {
         g.fillRect(0, 0, 500, 500);
 
         // draw polymorph
-        bluePoly.draw(g);
+//        bluePoly.draw(g);
+//        redPoly.draw(g);
+//        movPoly.draw(g);
+        for (int i = 0; i<polys.size();i++) {
+			polys.get(i).draw(g);
+		}
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
-        bluePoly.update();
+//        bluePoly.update();
+//        redPoly.update();
+//        movPoly.update();
+        for (int i = 0; i<polys.size();i++) {
+        	polys.get(i).update();
+		}
 
     }
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
+		polys.get(3).x = e.getX()-75;
+		polys.get(3).y = e.getY()-95;
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		if ((arg0.getX() > polys.get(3).x)&&(arg0.getX() < polys.get(3).x+15)&&(arg0.getY() > polys.get(3).y)&&(arg0.getY() < polys.get(3).y+150)) {
+			JOptionPane.showMessageDialog(null, "L");
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+    
 }

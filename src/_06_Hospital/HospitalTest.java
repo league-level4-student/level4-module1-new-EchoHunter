@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -32,89 +34,108 @@ import junit.framework.TestCase;
 
 public class HospitalTest extends TestCase {
 
-    private Hospital testHospital = new Hospital();
+	private Hospital testHospital = new Hospital();
 
-    public void testAddDoctor() {
-        testHospital.addDoctor(new GeneralPractitioner());
-        testHospital.addDoctor(new GeneralPractitioner());
-        testHospital.addDoctor(new Surgeon());
-        assertEquals(3, testHospital.getDoctors().size());
-    }
+	public void testAddDoctor() {
+		testHospital.addDoc(new GeneralPractitioner());
+		testHospital.addDoc(new GeneralPractitioner());
+		testHospital.addDoc(new Surgeon());
+		assertEquals(3, testHospital.getDoctors().size());
+	}
 
-    public void testAddPatient() throws Exception {
-        testHospital.addPatient(new Patient());
-        testHospital.addPatient(new Patient());
-        testHospital.addPatient(new Patient());
-        assertEquals(3, testHospital.getPatients().size());
-    }
+	public void testAddPatient() throws Exception {
+		testHospital.addPat(new Patient());
+		testHospital.addPat(new Patient());
+		testHospital.addPat(new Patient());
+		assertEquals(3, testHospital.getPatients().size());
+	}
 
-    public void testDoctorsHaveSpecialties() throws Exception {
-        
-        Surgeon testSurgeon = new Surgeon();
-        assertEquals(true, testSurgeon.performsSurgery());
-        assertEquals(false, testSurgeon.makesHouseCalls());
+	public void testDoctorsHaveSpecialties() throws Exception {
 
-        GeneralPractitioner testGP = new GeneralPractitioner();
-        assertEquals(true, testGP.makesHouseCalls());
-        assertEquals(false, testGP.performsSurgery());
-    }
+		Surgeon testSurgeon = new Surgeon();
+		assertEquals(true, testSurgeon.canSurg());
+		assertEquals(false, testSurgeon.canCall());
 
-    public void testAssignDoctor() throws Exception {
-        Doctor testDoctor = new GeneralPractitioner();
-        testDoctor.assignPatient(new Patient());
-        assertEquals(1, testDoctor.getPatients().size());
-        testDoctor.assignPatient(new Patient());
-        assertEquals(2, testDoctor.getPatients().size());
-        testDoctor.assignPatient(new Patient());
-        assertEquals(3, testDoctor.getPatients().size());
-    }
+		GeneralPractitioner testGP = new GeneralPractitioner();
+		assertEquals(true, testGP.canCall());
+		assertEquals(false, testGP.canSurg());
+	}
 
-    // When you check a patient's pulse, they feel cared for
-    public void testCheckPulse() throws Exception {
-        Patient testPatient = new Patient();
-        //Note: Accessors for booleans typically don't use "get"
-        assertEquals(false, testPatient.feelsCaredFor());
-        testPatient.checkPulse();
-        assertEquals(true, testPatient.feelsCaredFor());
-    }
+	public void testAssignDoctor() throws Exception {
+		Doctor testDoctor = new GeneralPractitioner();
+		try {
+			testDoctor.addPatient(new Patient());
+			assertEquals(1, testDoctor.giveList().size());
+			testDoctor.addPatient(new Patient());
+			assertEquals(2, testDoctor.giveList().size());
+			testDoctor.addPatient(new Patient());
+			assertEquals(3, testDoctor.giveList().size());
+		} catch (DoctorFullException e) {
+			e.printStackTrace();
+		}
+	}
 
-    // Doctors work on their Patients by checking their pulses.
-    public void testDoctorsWork() throws Exception {
-        Doctor testDoctor = new GeneralPractitioner();
-        Patient max = new Patient();
-        Patient macky = new Patient();
-        testDoctor.assignPatient(max);
-        testDoctor.assignPatient(macky);
-        assertEquals(false, max.feelsCaredFor());
-        assertEquals(false, macky.feelsCaredFor());
-        testDoctor.doMedicine();
-        assertEquals(true, max.feelsCaredFor());
-        assertEquals(true, macky.feelsCaredFor());
-    }
+	// When you check a patient's pulse, they feel cared for
+	public void testCheckPulse() throws Exception {
+		Patient testPatient = new Patient();
+		// Note: Accessors for booleans typically don't use "get"
+		assertEquals(false, testPatient.caredFor());
+		testPatient.checkPulse();
+		assertEquals(true, testPatient.caredFor());
+	}
 
-    public void testDoctorsCanOnlyHandle3Patients() throws Exception {
-        GeneralPractitioner testDoctor = new GeneralPractitioner();
-        testDoctor.assignPatient(new Patient());
-        testDoctor.assignPatient(new Patient());
-        testDoctor.assignPatient(new Patient());
-        try {
-            testDoctor.assignPatient(new Patient());
-            assertTrue(false);
-        } catch (DoctorFullException dfe) {
-            assertTrue(true);
-        }
-        assertTrue(testDoctor.getPatients().size() == 3);
-    }
+	// Doctors work on their Patients by checking their pulses.
+	public void testDoctorsWork() throws Exception {
+		Doctor testDoctor = new GeneralPractitioner();
+		Patient max = new Patient();
+		Patient macky = new Patient();
+		try {
+			testDoctor.addPatient(max);
+			testDoctor.addPatient(macky);
+		} catch (DoctorFullException e) {
+			e.printStackTrace();
+		}
+		assertEquals(false, max.caredFor());
+		assertEquals(false, macky.caredFor());
+		testDoctor.doMedicine();
+		assertEquals(true, max.caredFor());
+		assertEquals(true, macky.caredFor());
+	}
 
-    // Add 3 Doctors and 8 Patients to the testHospital for this test
-    public void test8Patients() throws Exception {
+	public void testDoctorsCanOnlyHandle3Patients() throws Exception {
+		GeneralPractitioner testDoctor = new GeneralPractitioner();
 
-        testHospital.assignPatientsToDoctors();
+		try {
+			testDoctor.addPatient(new Patient());
+			testDoctor.addPatient(new Patient());
+			testDoctor.addPatient(new Patient());
+		} catch (DoctorFullException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			testDoctor.addPatient(new Patient());
+			assertTrue(false);
+		} catch (DoctorFullException dfe) {
+			assertTrue(true);
+		}
+		assertTrue(testDoctor.giveList().size() == 3);
+	}
 
-        List<Doctor> testDoctors = testHospital.getDoctors();
-        assertEquals(3, testDoctors.get(0).getPatients().size());
-        assertEquals(3, testDoctors.get(1).getPatients().size());
-        assertEquals(2, testDoctors.get(2).getPatients().size());
-    }
+	// Add 3 Doctors and 8 Patients to the testHospital for this test
+	public void test8Patients() throws Exception {
+		testHospital.addDoc(new GeneralPractitioner());
+		testHospital.addDoc(new GeneralPractitioner());
+		testHospital.addDoc(new Surgeon());
+		for (int i =0; i<8; i++) {
+			testHospital.addPat(new Patient());
+		}
+		testHospital.assignPats();
+
+		List<Doctor> testDoctors = testHospital.getDoctors();
+		assertEquals(3, testDoctors.get(0).giveList().size());
+		assertEquals(3, testDoctors.get(1).giveList().size());
+		assertEquals(2, testDoctors.get(2).giveList().size());
+	}
 
 }
